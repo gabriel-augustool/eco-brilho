@@ -1,18 +1,25 @@
-name: Jekyllsite CI 
+name: Clone Repo
 
 on:
-push: 
-branches: [ "main" ] 
-pull_request:
-branches: [ "main" ]
+  workflow_dispatch:   # executa manualmente pelo GitHub Actions
+  push:                # ou dispara em todo push
+    branches:
+      - main
 
-jobs: 
-build: 
+jobs:
+  clone:
+    runs-on: ubuntu-latest
 
-runs-on: ubuntu-latest
-steps: 
-- uses: actions/checkout@v4 
-- name: Build the site in the jekyll/builder container 
-run: |
-docker run \ -v ${{ github.workspace }}:/srv/jekyll -v ${{ github.workspace }}/_site:/srv/jekyll/_site \
-jekyll/builder:latest /bin/bash -c "chmod -R 777 /srv/jekyll && jekyll build --future"
+    steps:
+      # Passo 1: clonar repositório
+      - name: Clonar repositório
+        uses: actions/checkout@v4
+        with:
+          repository: usuario/repositorio-alvo   # opcional, outro repo
+          ref: main                             # branch desejada
+          token: ${{ secrets.GITHUB_TOKEN }}  # token de acesso
+          publish_dir: ./
+
+      # Passo 2: listar arquivos clonados
+      - name: Listar arquivos
+        run: ls -la
